@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Cardboard VR Controller</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar-nft.js"></script>
+    <style>
+      body, html { margin: 0; overflow: hidden; background: white; }
+      video { display: none !important; } /* Hides camera feed */
+    </style>
+  </head>
+  <body>
+    <a-scene
+      embedded
+      vr-mode-ui="enabled: false"
+      renderer="logarithmicDepthBuffer: true;"
+      arjs="trackingMethod: best; sourceType: webcam; debugUIEnabled: false;"
+    >
+      <!-- Marker controller -->
+      <a-marker preset="hiro" id="controller">
+        <a-box id="pointer" position="0 0.5 0" color="red"></a-box>
+      </a-marker>
+
+      <!-- White background plane so camera feed is hidden -->
+      <a-entity geometry="primitive: plane; height: 100; width: 100" position="0 0 -5" material="color: white"></a-entity>
+
+      <!-- Scene camera -->
+      <a-entity camera></a-entity>
+    </a-scene>
+
+    <script>
+      AFRAME.registerComponent('controller-tracker', {
+        tick: function () {
+          const marker = document.querySelector('#controller');
+          const pointer = document.querySelector('#pointer');
+
+          if (marker.object3D.visible) {
+            let pos = marker.object3D.position;
+            let rot = marker.object3D.rotation;
+
+            // Make the cube move according to marker movement
+            pointer.setAttribute('position', {x: pos.x * 2, y: pos.y * 2, z: pos.z});
+            pointer.setAttribute('rotation', {x: rot.x * 57.3, y: rot.y * 57.3, z: rot.z * 57.3});
+          }
+        }
+      });
+
+      document.querySelector('a-scene').setAttribute('controller-tracker', '');
+    </script>
+  </body>
+</html>
